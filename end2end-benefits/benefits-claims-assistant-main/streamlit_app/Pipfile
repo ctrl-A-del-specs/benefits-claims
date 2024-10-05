@@ -1,0 +1,27 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+openai = "*"
+scikit-learn = "*"
+pandas = "*"  # Updated to match requirements.txt
+elasticsearch = "*"
+python-dotenv = "*"
+hyperopt = "*"
+streamlit = "*"
+numpy = "*"  # Match the specific version needed
+psycopg2-binary = "==2.9.9"  # Updated to match requirements.txt
+python-version = "*"
+sentence-transformers = "*"
+pgcli = "*"
+notebook = "*"
+
+[dev-packages]
+tqdm = "*"
+notebook = "==7.1.2"
+ipywidgets = "*"
+
+[requires]
+python_version = "3.12"
