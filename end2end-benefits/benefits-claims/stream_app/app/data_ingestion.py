@@ -47,9 +47,9 @@ def ingest_json_data(json_data, table_name):
 # Main ingestion function
 def main():
     # Paths to your data files
-    claims_data_path = '/workspaces/uk-benefits-claims/benefits-claims/notebooks/data/claims.csv'
-    document_data_path = '/workspaces/uk-benefits-claims/benefits-claims/stream_app/app/document-with-ids.json'
-    ground_truth_data_path = '/workspaces/uk-benefits-claims/benefits-claims/stream_app/app/ground-truth-data.csv'
+    claims_data_path = '/workspaces/benefits-claims/end2end-benefits/benefits-claims/notebooks/data/claims.csv'
+    document_data_path = '/workspaces/benefits-claims/end2end-benefits/benefits-claims/stream_app/app/document-with-ids.json'
+    ground_truth_data_path = '/workspaces/benefits-claims/end2end-benefits/benefits-claims/stream_app/app/ground-truth-data.csv'
     
     # Load data
     claims_df = load_claims_data(claims_data_path)

@@ -18,7 +18,7 @@ INDEX_NAME = os.getenv("INDEX_NAME")
 
 def fetch_documents():
     print("Fetching documents...")
-    file_path = "/workspaces/uk-benefits-claims/benefits-claims/stream_app/app/document-with-ids.json"
+    file_path = "/workspaces/benefits-claims/end2end-benefits/benefits-claims/stream_app/app/document-with-ids.json"
     
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"The file {file_path} does not exist.")
@@ -32,7 +32,7 @@ def fetch_documents():
 
 def fetch_ground_truth():
     print("Fetching ground truth data...")
-    file_path = "/workspaces/uk-benefits-claims/benefits-claims/stream_app/app/ground-truth-data.csv"
+    file_path = "/workspaces/benefits-claims/end2end-benefits/benefits-claims/stream_app/app/ground-truth-data.csv"
     
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"The file {file_path} does not exist.")
