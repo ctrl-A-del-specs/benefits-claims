@@ -1,18 +1,19 @@
 import os
 import time
 import json
-import streamlit as st
 
 from openai import OpenAI
+
 from elasticsearch import Elasticsearch
 from sentence_transformers import SentenceTransformer
-from dotenv import load_dotenv
 
-load_dotenv()
+
 
 ELASTIC_URL = os.getenv("ELASTIC_URL", "http://elasticsearch:9200")
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://ollama:11434/v1/")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "your-api-key-here")
+INDEX_NAME = os.getenv("INDEX_NAME", "benefit-claims") 
+
 
 es_client = Elasticsearch(ELASTIC_URL)
 ollama_client = OpenAI(base_url=OLLAMA_URL, api_key="ollama")
@@ -38,90 +39,27 @@ def elastic_search_text(query, section, index_name="benefit-claims"):
         },
     }
 
-    try:
-        response = es_client.search(index=index_name, body=search_query)
-        return [hit["_source"] for hit in response["hits"]["hits"]]
-    except Exception as e:
-        st.error(f"Error in Elasticsearch query: {e}")
-        return []
+    response = es_client.search(index=index_name, body=search_query)
+    return [hit["_source"] for hit in response["hits"]["hits"]]
 
 
 def elastic_search_knn(field, vector, section, index_name="benefit-claims"):
-    knn_query = {
-        "knn": {
-            "field": field,
-            "query_vector": vector,
-            "k": 5,
-            "num_candidates": 10000,
-            "filter": {"term": {"section": section}}  # Filter for section
-        }
+    knn = {
+        "field": field,
+        "query_vector": vector,
+        "k": 5,
+        "num_candidates": 10000,
+        "filter": {"term": {"section": section}},
     }
 
     search_query = {
-        "size": 5,
-        "query": {
-            "bool": {
-                "must": [knn_query]  
-            }
-        },
+        "knn": knn,
         "_source": ["answer", "section", "question", "category", "id"],
     }
 
-    try:
-        es_results = es_client.search(index=index_name, body=search_query)
-        return [hit["_source"] for hit in es_results["hits"]["hits"]]
-    except Exception as e:
-        st.error(f"Error in KNN Elasticsearch query: {e}")
-        return []
+    es_results = es_client.search(index=index_name, body=search_query)
 
-def elastic_search_hybrid(query, vector, section, index_name="benefit-claims"):
-    search_query = {
-        "size": 5,
-        "query": {
-            "bool": {
-                "must": [
-                    {
-                        "knn": {
-                            "field": "question_answer_vector",
-                            "query_vector": vector,
-                            "k": 5,
-                            "num_candidates": 10000
-                            # "boost": 0.5  
-                        }
-                    },
-                    {
-                        "multi_match": {
-                            "query": query,
-                            "fields": ["question^3", "answer", "category"],
-                            "type": "best_fields"
-                            # "boost": 0.5  
-                        }
-                    }
-                ],
-                "filter": {
-                    "term": {
-                        "section": section 
-                    }
-                }
-            }
-        },
-        "_source": ["answer", "section", "question", "category", "id"]
-    }
-
-    try:
-        es_results = es_client.search(index=index_name, body=search_query)
-        return [hit["_source"] for hit in es_results["hits"]["hits"]]
-    except Exception as e:
-        st.error(f"Error in hybrid Elasticsearch query: {e}")
-        return []
-
-
-
-def question_answer_hybrid(q):
-    question = q['question']
-    section = q['section'] 
-    v_q = model.encode(question)
-    return elastic_search_hybrid(question, v_q, section)
+    return [hit["_source"] for hit in es_results["hits"]["hits"]]
 
 
 def build_prompt(query, search_results):
@@ -143,6 +81,7 @@ CONTEXT:
         ]
     )
     return prompt_template.format(question=query, context=context).strip()
+    
 
 
 def llm(prompt, model_choice):
@@ -180,56 +119,99 @@ def llm(prompt, model_choice):
 
 def evaluate_relevance(question, answer):
     prompt_template = """
-You are an expert evaluator for a Retrieval-Augmented Generation (RAG) system.
-Your task is to analyze the relevance of the generated answer to the given question.
-Based on the relevance of the generated answer, you will classify it
-as "NON_RELEVANT", "PARTLY_RELEVANT", or "RELEVANT".
+    You are an expert evaluator for a Retrieval-Augmented Generation (RAG) system.
+    Your task is to analyze the relevance of the generated answer to the given question.
+    Based on the relevance of the generated answer, you will classify it
+    as "NON_RELEVANT", "PARTLY_RELEVANT", or "RELEVANT".
 
-Here is the data for evaluation:
+    Here is the data for evaluation:
 
-Question: {question}
-Generated Answer: {answer}
+    Question: {question}
+    Generated Answer: {answer}
 
-Please analyze the content and context of the generated answer in relation to the question
-and provide your evaluation in parsable JSON without using code blocks:
+    Please analyze the content and context of the generated answer in relation to the question
+    and provide your evaluation in parsable JSON without using code blocks:
 
-{{
-  "Relevance": "NON_RELEVANT" | "PARTLY_RELEVANT" | "RELEVANT",
-  "Explanation": "[Provide a brief explanation for your evaluation]"
-}}
-""".strip()
+    {{
+      "Relevance": "NON_RELEVANT" | "PARTLY_RELEVANT" | "RELEVANT",
+      "Explanation": "[Provide a brief explanation for your evaluation]"
+    }}
+    """.strip()
 
     prompt = prompt_template.format(question=question, answer=answer)
     evaluation, tokens, _ = llm(prompt, 'openai/gpt-4o-mini')
-
+    
     try:
         json_eval = json.loads(evaluation)
-        return json_eval.get('Relevance', 'UNKNOWN'), json_eval.get('Explanation', 'No explanation provided'), tokens
+        return json_eval['Relevance'], json_eval['Explanation'], tokens
     except json.JSONDecodeError:
-        st.error("Failed to parse evaluation JSON.")
         return "UNKNOWN", "Failed to parse evaluation", tokens
 
 
-
 def calculate_openai_cost(model_choice, tokens):
-    openai_cost = 0.0  
+    openai_cost = 0
 
     if model_choice == 'openai/gpt-3.5-turbo':
         openai_cost = (tokens['prompt_tokens'] * 0.0015 + tokens['completion_tokens'] * 0.002) / 1000
     elif model_choice in ['openai/gpt-4o', 'openai/gpt-4o-mini']:
         openai_cost = (tokens['prompt_tokens'] * 0.03 + tokens['completion_tokens'] * 0.06) / 1000
 
-    return float(openai_cost) 
+    return openai_cost
 
 
+def elastic_search_hybrid(field, query, vector, section):
+    knn_query = {
+        "field": field,
+        "query_vector": vector,
+        "k": 5,
+        "num_candidates": 10000,
+        "boost": 0.5,
+        "filter": {
+            "term": {
+                "section": section
+            }
+        }
+    }
 
-def get_answer(query, section, model_choice, search_type='Hybrid'):
-    if search_type == 'Vector':
+    keyword_query = {
+        "bool": {
+            "must": {
+                "multi_match": {
+                    "query": query,
+                    "fields": ["question", "answer", "category"],
+                    "type": "best_fields",
+                    "boost": 0.5,
+                }
+            },
+            "filter": {
+                "term": {
+                    "section": section
+                }
+            }
+        }
+    }
+
+    search_query = {
+        "knn": knn_query,
+        "query": keyword_query,
+        "size": 5,
+        "_source": ["answer", "section", "question", "category", "id"]
+    }
+
+    es_results = es_client.search(
+        index=INDEX_NAME,
+        body=search_query
+    )
+    
+    return [hit['_source'] for hit in es_results['hits']['hits']]
+
+def get_answer(query, section, model_choice, search_type):
+    if search_type == 'Hybrid':
+        vector = model.encode(query)
+        search_results = elastic_search_hybrid('question_answer_vector', query, vector, section)
+    elif search_type == 'Vector':
         vector = model.encode(query)
         search_results = elastic_search_knn('question_answer_vector', vector, section)
-    elif search_type == 'Hybrid':
-        q = {'question': query, 'section': section}
-        search_results = question_answer_hybrid(q)
     else:
         search_results = elastic_search_text(query, section)
 

@@ -45,7 +45,7 @@ def init_db():
                 CREATE TABLE feedback (
                     id SERIAL PRIMARY KEY,
                     conversation_id TEXT REFERENCES conversations(id),
-                    feedback INTEGER NOT NULL,
+                    feedback TEXT NOT NULL,
                     timestamp TIMESTAMP WITH TIME ZONE NOT NULL
                 )
             """)
@@ -73,7 +73,6 @@ def save_conversation(conversation_id, question, answer_data, section, timestamp
                     question,
                     answer_data["answer"],
                     section,
-                    # category,  
                     answer_data["model_used"],
                     answer_data["response_time"],
                     answer_data["relevance"],
@@ -104,12 +103,11 @@ def save_feedback(conversation_id, feedback, timestamp=None):
                 INSERT INTO feedback (conversation_id, feedback, timestamp)
                 VALUES (%s, %s, %s)
                 """,
-                (conversation_id, feedback, timestamp)
+                (conversation_id, str(feedback), timestamp)
             )
         conn.commit()
     finally:
         conn.close()
-
 
 def get_recent_conversations(limit=5, relevance=None):
     conn = get_db_connection()
@@ -125,9 +123,6 @@ def get_recent_conversations(limit=5, relevance=None):
             if relevance:
                 query += " AND c.relevance = %s"
                 params.append(relevance)
-            # if category:
-            #     query += " AND c.category = %s"
-            #     params.append(category)
             query += " ORDER BY c.timestamp DESC LIMIT %s"
             params.append(limit)
 
@@ -142,8 +137,8 @@ def get_feedback_stats():
         with conn.cursor(cursor_factory=DictCursor) as cur:
             cur.execute("""
                 SELECT 
-                    SUM(CASE WHEN feedback > 0 THEN 1 ELSE 0 END) as thumbs_up,
-                    SUM(CASE WHEN feedback < 0 THEN 1 ELSE 0 END) as thumbs_down
+                    SUM(CASE WHEN feedback = '1' THEN 1 ELSE 0 END) as thumbs_up,
+                    SUM(CASE WHEN feedback = '-1' THEN 1 ELSE 0 END) as thumbs_down
                 FROM feedback
             """)
             return cur.fetchone()
