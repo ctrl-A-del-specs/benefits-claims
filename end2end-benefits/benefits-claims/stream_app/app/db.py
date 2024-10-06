@@ -66,7 +66,23 @@ def save_conversation(conversation_id, question, answer_data, section, timestamp
                 (id, question, answer, section, model_used, response_time, relevance, 
                 relevance_explanation, prompt_tokens, completion_tokens, total_tokens, 
                 eval_prompt_tokens, eval_completion_tokens, eval_total_tokens, openai_cost, timestamp)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, COALESCE(%s, CURRENT_TIMESTAMP))
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                ON CONFLICT (id) DO UPDATE SET
+                question = EXCLUDED.question,
+                answer = EXCLUDED.answer,
+                section = EXCLUDED.section,
+                model_used = EXCLUDED.model_used,
+                response_time = EXCLUDED.response_time,
+                relevance = EXCLUDED.relevance,
+                relevance_explanation = EXCLUDED.relevance_explanation,
+                prompt_tokens = EXCLUDED.prompt_tokens,
+                completion_tokens = EXCLUDED.completion_tokens,
+                total_tokens = EXCLUDED.total_tokens,
+                eval_prompt_tokens = EXCLUDED.eval_prompt_tokens,
+                eval_completion_tokens = EXCLUDED.eval_completion_tokens,
+                eval_total_tokens = EXCLUDED.eval_total_tokens,
+                openai_cost = EXCLUDED.openai_cost,
+                timestamp = EXCLUDED.timestamp
             """,
                 (
                     conversation_id,

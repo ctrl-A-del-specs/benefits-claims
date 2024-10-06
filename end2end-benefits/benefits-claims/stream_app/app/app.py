@@ -8,12 +8,12 @@ def main():
     st.title("Benefits & Claims Assistant")
 
     # Session state initialization
-    if "conversation_id" not in st.session_state:
-        st.session_state.conversation_id = str(uuid.uuid4())
     if "conversation_saved" not in st.session_state:
         st.session_state.conversation_saved = False
     if "count" not in st.session_state:
         st.session_state.count = 0
+    if "last_conversation_id" not in st.session_state:
+        st.session_state.last_conversation_id = None
 
     # Claims selection
     section = st.selectbox("Select a claims type:", ["general claim benefits", "nhs claim benefits"])
@@ -42,26 +42,28 @@ def main():
                 if answer_data["openai_cost"] > 0:
                     st.write(f"OpenAI cost: ${answer_data['openai_cost']:.4f}")
 
+                # Generate a new conversation ID for each question
+                conversation_id = str(uuid.uuid4())
+                
                 # Save conversation to the database
-                save_conversation(st.session_state.conversation_id, user_input, answer_data, section)
-                st.session_state.conversation_saved = True  # Set flag to True once saved
+                save_conversation(conversation_id, user_input, answer_data, section)
+                st.session_state.conversation_saved = True
+                st.session_state.last_conversation_id = conversation_id  # Store the last conversation ID
 
-    # Feedback buttons (now work on the saved conversation)
+    # Feedback buttons
     col1, col2 = st.columns(2)
     with col1:
         if st.button("+1"):
-            if st.session_state.conversation_saved:
-                st.session_state.count += 1
-                save_feedback(st.session_state.conversation_id, 1)
+            if st.session_state.last_conversation_id:
+                save_feedback(st.session_state.last_conversation_id, "1")
                 st.success("Positive feedback saved")
             else:
                 st.error("Please ask a question before giving feedback.")
 
     with col2:
         if st.button("-1"):
-            if st.session_state.conversation_saved:
-                st.session_state.count -= 1
-                save_feedback(st.session_state.conversation_id, -1)
+            if st.session_state.last_conversation_id:
+                save_feedback(st.session_state.last_conversation_id, "-1")
                 st.success("Negative feedback saved")
             else:
                 st.error("Please ask a question before giving feedback.")
@@ -71,24 +73,24 @@ def main():
     col3, col4, col5 = st.columns(3)
     with col3:
         if st.button("Relevant"):
-            if st.session_state.conversation_saved:
-                save_feedback(st.session_state.conversation_id, "RELEVANT")
+            if st.session_state.last_conversation_id:
+                save_feedback(st.session_state.last_conversation_id, "RELEVANT")
                 st.success("Marked as relevant")
             else:
                 st.error("Please ask a question first.")
 
     with col4:
         if st.button("Partly Relevant"):
-            if st.session_state.conversation_saved:
-                save_feedback(st.session_state.conversation_id, "PARTLY_RELEVANT")
+            if st.session_state.last_conversation_id:
+                save_feedback(st.session_state.last_conversation_id, "PARTLY_RELEVANT")
                 st.success("Marked as partly relevant")
             else:
                 st.error("Please ask a question first.")
 
     with col5:
         if st.button("Non-Relevant"):
-            if st.session_state.conversation_saved:
-                save_feedback(st.session_state.conversation_id, "NON_RELEVANT")
+            if st.session_state.last_conversation_id:
+                save_feedback(st.session_state.last_conversation_id, "NON_RELEVANT")
                 st.success("Marked as non-relevant")
             else:
                 st.error("Please ask a question first.")
