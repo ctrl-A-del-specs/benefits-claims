@@ -1,5 +1,3 @@
-# Table of Content
-
 ## Table of Contents
 - [UK Benefits and Claims Assistant](#uk-benefits-and-claims-assistant)
 - [Problem Description](#problem-description)
@@ -116,7 +114,7 @@ Users can provide feedback on the relevance and accuracy of the answers, which i
 
 
 Note to run the elasticsearch,we used a docker container using this code:
-`bash
+```bash
 docker run -it \
     --rm \
     --name elasticsearch \
@@ -125,7 +123,8 @@ docker run -it \
     -p 9300:9300 \
     -e "discovery.type=single-node" \
     -e "xpack.security.enabled=false" \
-    docker.elastic.co/elasticsearch/elasticsearch:8.4.3`
+    docker.elastic.co/elasticsearch/elasticsearch:8.4.3
+```
 
 ## Evaluation
 
@@ -248,6 +247,7 @@ python pipenv install pgcli
 ```bash
 pgcli -h localhost -U your_username -d benefit_claims -W
 ```
+
 Initialize the Database:
 
 Ensure that your PostgreSQL server is running and the environment variables are correctly set in a .env file.
@@ -272,49 +272,61 @@ Access Grafana: Go to `http://localhost:3000` (default login: admin/admin).
  Queries Used are :
 
 Response Time
-`SELECT
+```bash
+SELECT
   timestamp AS time,
   response_time
 FROM conversations
-ORDER BY timestamp`
+ORDER BY timestamp
+```
 
 Feedback Statistics
-`SELECT
+```bash
+SELECT
   SUM(CASE WHEN feedback > 0 THEN 1 ELSE 0 END) as thumbs_up,
   SUM(CASE WHEN feedback < 0 THEN 1 ELSE 0 END) as thumbs_down
-FROM feedback`
+FROM feedback
+```
 
 OpenAI Cost
-`SELECT
+```bash
+SELECT
   timestamp AS time,
   openai_cost
 FROM conversations
 WHERE openai_cost > 0
-ORDER BY timestamp`
+ORDER BY timestamp
+```
 
 Model Usage
-`SELECT
+```bash
+SELECT
   model_used,
   COUNT(*) as count
 FROM conversations
-GROUP BY model_used`
+GROUP BY model_used
+```
 
 Recent Conversations
-`SELECT
+```bash
+SELECT
   timestamp AS time,
   question,
   answer,
   relevance
 FROM conversations
 ORDER BY timestamp DESC
-LIMIT 5`
+LIMIT 5
+```
 
 Relevance Distribution
-`SELECT
+```bash
+SELECT
   relevance,
   COUNT(*) as count
 FROM conversations
-GROUP BY relevance`
+GROUP BY relevance
+```
 
 We generate data using a python to visualize more information on the grafana dashboard using this: [grafana data](./end2end-benefits/benefits-claims/stream_app/app/generate_data.py)
 
