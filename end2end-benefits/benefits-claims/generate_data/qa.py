@@ -19,17 +19,11 @@ def load_model():
 es_client = Elasticsearch('http://localhost:9200')
 
 model = load_model()
-# Load documents
-# with open('../data/document-with-ids.json', 'r') as file:
-#     documents = json.load(file)
 
 # Load ground truth data
 df_ground_truth = pd.read_csv('../data/ground-truth-data.csv')
 ground_truth = df_ground_truth.to_dict(orient='records')
 
-# Load Sentence Transformer model for embedding
-# model_name = 'multi-qa-MiniLM-L6-cos-v1'
-# model = SentenceTransformer(model_name)
 
 
 
