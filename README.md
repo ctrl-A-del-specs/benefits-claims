@@ -1,4 +1,26 @@
-# UK Benefits and Claims Assistant
+# Table of Content
+
+## Table of Contents
+- [UK Benefits and Claims Assistant](#uk-benefits-and-claims-assistant)
+- [Problem Description](#problem-description)
+- [Data](#data)
+- [Technologies](#technologies)
+- [Usage](#usage)
+- [RAG Flow & Implementation](#rag-flow--implementation)
+- [Evaluation](#evaluation)
+- [Retrieval](#retrieval)
+- [Interface](#interface)
+- [Data Ingestion](#data-ingestion)
+- [Running the Application](#running-the-application)
+- [POSTGRES Setup](#postgres-setup)
+- [Monitoring](#monitoring)
+- [Background](#background)
+- [Conclusion](#conclusion)
+- [Contributing](#contributing)
+- [Future Work](#future-work)
+- [Contact](#contact)
+
+## UK Benefits and Claims Assistant
 
 The UK Benefits and Claims Assistant simplifies the process of querying information on various UK benefits and claims, improving accessibility and reducing the time it takes for users to get crucial answers. The integration of AI with a robust dataset enables the tool to serve as a reliable resource for citizens navigating these processes.
 
@@ -8,11 +30,11 @@ Navigating the complex landscape of the UK benefits and claims system can be ove
 
 The UK Benefits and Claims Assistant project addresses this issue by providing a user-friendly RAG (Retrieval-Augmented Generation) application. This assistant allows users to ask questions related to UK benefits, claims, and NHS negligence claims. By leveraging a pre-processed dataset and advanced AI models, it offers accurate, real-time answers on various topics like managing existing benefits, medical negligence claims, and statutory sick pay.
 
-![Overview of Benefits and Claims Assistant](/workspaces/benefits-claims/end2end-benefits/benefits-claims/notebooks/data/benefits.png)
+![Overview of Benefits and Claims Assistant](end2end-benefits/benefits-claims/notebooks/data/benefits.png)
 
 ## Data
 
-The dataset used in this project has been generated and compiled using ChatGPT. It consists of 425 records and is stored in the `data/claims.csv` file. The dataset is structured into four columns:
+The dataset used in this project has been generated and compiled using ChatGPT. It consists of 425 records and is stored in the `data/claims.csv` folder. The dataset is structured into four columns:
 
 - category: Enables users to perform searches within a specific category, improving the relevance of search results (e.g., general claim benefits, NHS claim benefits).
 - question: Captures the specific inquiries made by users, serving as the primary input for the system to generate relevant answers (e.g., "How do I update my benefit information?").
@@ -32,60 +54,16 @@ Families,What is the Childcare Grant?,The Childcare Grant is available to studen
 
 ## Technologies
 
-* [Minsearch](https://github.com/DataTalksClub/llm-zoomcamp/blob/main/01-intro/minsearch.py)
-* [Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/current/rest-apis.html)
+* Minsearch
+* Elasticsearch
 * OpenAI & Google FlanT5 for LLM
 * Streamlit for Interface
 * Docker for Containerization
 * HuggingFace for Model Embeddings
 * Postgres for Database
 * Grafana for Monitoring
+
 See Background for more information
-
-### Streamlit
-
-Streamlit is an open-source Python framework used to create interactive and visually appealing web applications for machine learning and data science projects. It enables rapid development and deployment of user-friendly interfaces with minimal coding effort.
-
-### Elasticsearch
-
-Elasticsearch is a distributed, RESTful search and analytics engine designed for horizontal scalability, reliability, and real-time search capabilities. It is utilized in this project to efficiently index and retrieve relevant documents based on user queries, enhancing the application's search functionality.
-
-### SentenceTransformers
-
-SentenceTransformers is a Python library that provides an easy way to compute dense vector representations (embeddings) for sentences and texts. These embeddings are crucial for semantic search and similarity comparisons, enabling the Retrieval-Augmented Generation (RAG) system to understand and retrieve contextually relevant information.
-
-### OpenAI API
-
-The OpenAI API offers access to advanced language models like GPT-3.5-Turbo and GPT-4o. These models are integral to generating coherent and contextually accurate answers based on retrieved information, powering the generative component of the RAG system.
-
-### PostgreSQL
-
-PostgreSQL is a powerful, open-source relational database system known for its robustness and scalability. It is used in this project to store conversations, feedback, and other relevant data, ensuring efficient data management and retrieval.
-
-## Jupyter Notebook
-
-Jupyter Notebook is an open-source web application that allows for the creation and sharing of documents containing live code, equations, visualizations, and narrative text. It is employed in this project for experimentation, data analysis, and developing AI models. We used this to carryout experiments and select the best approach to creating the final application.
-
-## Pipenv
-
-Pipenv is a dependency management tool for Python that combines Pipfile, Pipfile.lock, and virtual environments into a single workflow. It ensures consistent and reproducible environments across different development setups, simplifying the installation and management of project dependencies.
-
-## Docker
-
-Docker is a platform that enables the creation, deployment, and running of applications within containers. Containers package software with all its dependencies, ensuring that applications run consistently across various environments. Docker is used to containerize the Streamlit application and its dependencies, facilitating seamless deployment.
-
-## Psycopg2
-
-Psycopg2 is a PostgreSQL adapter for Python. It allows Python applications to connect to and interact with PostgreSQL databases, enabling efficient execution of SQL queries and management of database transactions.
-
-## Dotenv
-
-Dotenv is a tool for managing environment variables in Python applications. It loads environment variables from a `.env` file into the application's environment, allowing for secure and flexible configuration of sensitive information like database credentials and API keys.
-
-## Ollama Phi3
-
-Ollama Phi3 is an AI model used alongside OpenAI models to generate responses within the RAG system. It provides additional flexibility and options for handling diverse user queries, enhancing the overall performance and reliability of the assistant.
-
 
 ## USAGE 
 
@@ -111,10 +89,11 @@ cd notebooks/benefits-claims.ipynb
 pipenv run jupyter notebook
 ```
 
-## RAG flow
+## RAG Flow & Implementation
 
 RAG Flow
-The RAG (Retrieval-Augmented Generation) flow integrates retrieval mechanisms with generative AI models to provide accurate and contextually relevant answers. Here's an overview of the workflow:
+The RAG (Retrieval-Augmented Generation) flow integrates retrieval mechanisms with generative AI models to provide accurate and contextually relevant answers. We implemented a RAG flow using 3 search engines as knowledge base for indexing and retrieving documents - Minsearch, Elasticsearch(Text) and Elasticsearch(Vectorsearch). We also setup a LLM (ChatGpt4o), connected it to our knowledge using a prompt and queried the system. The code implementation for the RAG flow in the folder [benefit-claims](benefits-claims/notebooks/benefit-claims.ipynb).
+Here's an overview of the workflow:
 
 User Input:
 
@@ -127,7 +106,7 @@ Augmentation Phase:
 The retrieved documents are used as context to formulate a prompt for the AI model.
 Generation Phase:
 
-The AI model (OpenAI GPT-3.5-Turbo, GPT-4o, GPT-4o-mini, or Ollama Phi3) generates a coherent and accurate answer based on the provided context.
+The AI model (OpenAI GPT-4o, GPT-4o-mini, or Ollama Phi3) generates a coherent and accurate answer based on the provided context.
 Post-Processing:
 
 The generated answer is evaluated for relevance and quality using an additional AI model, ensuring that only the most appropriate responses are presented to the user.
@@ -135,7 +114,6 @@ Feedback Loop:
 
 Users can provide feedback on the relevance and accuracy of the answers, which is stored in the database to continually improve the system.
 
-We implemented a RAG flow using 3 search engines as knowledge base for indexing and retrieving documents - Minsearch, Elasticsearch(Text) and Elasticsearch(Vectorsearch). We also setup a LLM (ChatGpt4o), connected it to our knowledge using a prompt and queried the system. The code implementation for the RAG flow is at [benefit-claims](benefits-claims/notebooks/benefit-claims.ipynb).
 
 Note to run the elasticsearch,we used a docker container using this code:
 `bash
@@ -152,7 +130,7 @@ docker run -it \
 ## Evaluation
 
 We generated 2055 questions to evaluate the relevance of answers by some models. The 3 Models were used for evaluating the system were ChatGpt-4o, ChatGpt-4o-mini and Google FlanT5. 
-Using Cosine Similarity as an evaluating metric the average score (Mean) of ChatGpt-4o was `79%`, ChatGpt-4o-mini was `80%` and Google FlanT5 was `50%`. The code used for generating data and implementing the evaluation can be view here [offline-rag-evaluation](benefits-claims/notebooks/offline-rag-evaluation.ipynb)
+Using Cosine Similarity as an evaluating metric the average score (Mean) of ChatGpt-4o was `79%`, ChatGpt-4o-mini was `80%` and Google FlanT5 was `50%`. The code used for generating data and implementing the evaluation can be viewed at [offline-rag-evaluation](benefits-claims/notebooks/offline-rag-evaluation.ipynb)
 After establishing the fact that ChatGpt-4o-mini gave the best average, we also used LLM-as-a-judge to evaluate the answers that were of relevance to the questions generated my the model.
 
 Cosine Similarity - Mean
@@ -279,11 +257,11 @@ python data-ingestion.py
 pipenv run python prep.py 
 Run the Streamlit Application: 
 ```
+The full application will now be up and running, and you can access it via `localhost`.
 
 ## Monitoring
 
 We utilised grafana to monitor the application. We visualize query response times, API calls, and OpenAI costs then displayed and exported dashboard as a `json` file.Dashboard can be viewed here [Grafana Dashboard](./end2end-benefits/benefits-claims/stream_app/data/benefit_claims_dashboard.json)
-
 
 Run Grafana:
     ```bash
@@ -393,7 +371,8 @@ Grafana is used to monitor the performance and health of the UK Benefits and Cla
 - Real-Time Monitoring: Track system metrics, query response times, and API usage in real-time.
 - Custom Dashboards: Create visual dashboards to monitor various aspects like API costs, Elasticsearch query performance, and PostgreSQL health.
 
-
+## Conclusion
+This assistant tool demonstrates the potential of AI in making complex benefits and claims systems more accessible. By integrating RAG, LLMs, and robust search technologies, the application provides users with relevant and timely information that can significantly improve their experience.
 
 ## Contributing
 
@@ -404,6 +383,11 @@ Create a Feature Branch
 Commit Your Changes
 Push to the Branch
 Open a Pull Request
+
+## Future Work
+- Expand the dataset to cover more specific scenarios, especially within the NHS claims domain.
+- Refine the hybrid search functionality to improve MRR.
+- Incorporate real-time feedback mechanisms for further system improvement.
 
 ## Contact
 For any questions or suggestions, please contact kayalade007@gmail.com. 
