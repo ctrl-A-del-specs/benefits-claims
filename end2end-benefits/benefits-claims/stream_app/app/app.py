@@ -7,6 +7,17 @@ from db import save_conversation, save_feedback, get_recent_conversations, get_f
 def main():
     st.title("Benefits & Claims Assistant")
 
+    st.markdown(
+    """
+    <style>
+    .reportview-container {
+        background-color: lightgreen;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+    )
+
     # Session state initialization
     if "conversation_saved" not in st.session_state:
         st.session_state.conversation_saved = False
@@ -53,7 +64,7 @@ def main():
     # Feedback buttons
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("+1"):
+        if st.button("👍 Thumbs Up"):
             if st.session_state.last_conversation_id:
                 save_feedback(st.session_state.last_conversation_id, "1")
                 st.success("Positive feedback saved")
@@ -61,7 +72,7 @@ def main():
                 st.error("Please ask a question before giving feedback.")
 
     with col2:
-        if st.button("-1"):
+        if st.button("👎 Thumbs Down"):
             if st.session_state.last_conversation_id:
                 save_feedback(st.session_state.last_conversation_id, "-1")
                 st.success("Negative feedback saved")

@@ -235,10 +235,12 @@ We initialize the PostgresSql, Streamlit, and Elasticsearch using the setup in t
 Application codes can be view [Benefits&Claims - Streamlit](./end2end-benefits/benefits-claims/stream_app/)
 
 ```bash
-python data-ingestion
+python data-ingestion.py
 export POSTGRES="localhost"
 python prep.py
 ```
+```bash
+
 ## POSTGRES Setup
 
 Install pgcli
@@ -246,20 +248,24 @@ Install pgcli
 ```bash
 python pipenv install pgcli
 ```
+### Connecting to POSTGRES using pgcl
 
 ```bash
 pgcli -h localhost -U your_username -d benefit_claims -W
 ```
+Input your_name and your_password
 
+Common commands
+```bash
+\c
+\dt
+select * from conversations;
+select * from feedbacks;
+```
 Initialize the Database:
 
 Ensure that your PostgreSQL server is running and the environment variables are correctly set in a .env file.
 
-```bash
-python data-ingestion.py
-pipenv run python prep.py 
-Run the Streamlit Application: 
-```
 The full application will now be up and running, and you can access it via `localhost`.
 
 ## Monitoring
