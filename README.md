@@ -30,6 +30,9 @@ The UK Benefits and Claims Assistant project addresses this issue by providing a
 
 ![Overview of Benefits and Claims Assistant](end2end-benefits/benefits-claims/notebooks/data/benefits.png)
 
+[![Watch the video](https://www.loom.com/share/91b660b4f9d34e22b93fe68de1d3fe96?sid=979366d1-090a-4d2b-88aa-babd9b979c92)](./end2end-benefits/benefits-claims/stream_app/data/benefit&claims.mp4)
+
+
 ## Data
 
 The dataset used in this project has been generated and compiled using ChatGPT. It consists of 425 records and is stored in the [data folder](./end2end-benefits/benefits-claims/notebooks/data/) folder. The dataset is structured into four columns:
