@@ -32,7 +32,7 @@ The UK Benefits and Claims Assistant project addresses this issue by providing a
 
 ## Data
 
-The dataset used in this project has been generated and compiled using ChatGPT. It consists of 425 records and is stored in the `data/claims.csv` folder. The dataset is structured into four columns:
+The dataset used in this project has been generated and compiled using ChatGPT. It consists of 425 records and is stored in the [data folder](./end2end-benefits/benefits-claims/notebooks/data/) folder. The dataset is structured into four columns:
 
 - category: Enables users to perform searches within a specific category, improving the relevance of search results (e.g., general claim benefits, NHS claim benefits).
 - question: Captures the specific inquiries made by users, serving as the primary input for the system to generate relevant answers (e.g., "How do I update my benefit information?").
@@ -90,7 +90,7 @@ pipenv run jupyter notebook
 ## RAG Flow & Implementation
 
 RAG Flow
-The RAG (Retrieval-Augmented Generation) flow integrates retrieval mechanisms with generative AI models to provide accurate and contextually relevant answers. We implemented a RAG flow using 3 search engines as knowledge base for indexing and retrieving documents - Minsearch, Elasticsearch(Text) and Elasticsearch(Vectorsearch). We also setup a LLM (ChatGpt4o), connected it to our knowledge using a prompt and queried the system. The code implementation for the RAG flow in the folder [benefit-claims](benefits-claims/notebooks/benefit-claims.ipynb).
+The RAG (Retrieval-Augmented Generation) flow integrates retrieval mechanisms with generative AI models to provide accurate and contextually relevant answers. We implemented a RAG flow using 3 search engines as knowledge base for indexing and retrieving documents - Minsearch, Elasticsearch(Text) and Elasticsearch(Vectorsearch). We also setup a LLM (ChatGpt4o), connected it to our knowledge using a prompt and queried the system. The code implementation for the RAG flow in the folder [benefit-claims](./end2end-benefits/benefits-claims/notebooks/).
 Here's an overview of the workflow:
 
 User Input:
