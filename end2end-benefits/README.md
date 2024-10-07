@@ -55,7 +55,7 @@ pipenv run jupyter notebook
 
 ## RAG flow
 
-We implemented a RAG flow using 3 search engines as knowledge base for indexing and retrieving documents - Minsearch, Elasticsearch(Text) and Elasticsearch(Vectorsearch). We also setup a LLM (ChatGpt4o), connected it to our knowledge using a prompt and queried the system. The code implementation for the RAG flow is at [benefit-claims.ipynb](./notebooks/benefit-claims.ipynb).
+We implemented a RAG flow using 3 search engines as knowledge base for indexing and retrieving documents - Minsearch, Elasticsearch(Text) and Elasticsearch(Vectorsearch). We also setup a LLM (ChatGpt4o), connected it to our knowledge using a prompt and queried the system. The code implementation for the RAG flow is at [benefit-claims.ipynb](benefits-claims/notebooks/benefit-claims.ipynb).
 
 Note to run the elasticsearch,we used a docker container using this code:
 `bash
@@ -72,7 +72,7 @@ docker run -it \
 ## Evaluation
 
 We generated 2055 questions to evaluate the relevance of answers by some models. The 3 Models were used for evaluating the system were ChatGpt-4o, ChatGpt-4o-mini and Google FlanT5. 
-Using Cosine Similarity as an evaluating metric the average score (Mean) of ChatGpt-4o was `79%`, ChatGpt-4o-mini was `80%` and Google FlanT5 was `50%`. The code used for generating data and implementing the evaluation can be view here [offline-rag-evaluation.ipynb](./notebooks/offline-rag-evaluation.ipynb)
+Using Cosine Similarity as an evaluating metric the average score (Mean) of ChatGpt-4o was `79%`, ChatGpt-4o-mini was `80%` and Google FlanT5 was `50%`. The code used for generating data and implementing the evaluation can be view here [offline-rag-evaluation.ipynb](benefits-claims/notebooks/offline-rag-evaluation.ipynb)
 After establishing the fact that ChatGpt-4o-mini gave the best average, we also used LLM-as-a-judge to evaluate the answers that were of relevance to the questions generated my the model.
 
 Cosine Similarity - Mean
@@ -113,11 +113,11 @@ Question Answer Vector -
 Best Parameters -
 ` k: 23, num_candidates: 9000`
 
-The code for implementing retieval can be found: [hyperparameter.ipynb](./notebooks/hyperparameter.ipynb)
+The code for implementing retieval can be found: [hyperparameter.ipynb](benefits-claims/notebooks/hyperparameter.ipynb)
 
 ## Interface
 
-We created a simple interface using Streamlit to interact with the system. Code implementation can be found here [benefits-claims](./generate_data/qa.py)
+We created a simple interface using Streamlit to interact with the system. Code implementation can be found here [benefits-claims](benefits-claims/generate_data/qa.py)
 
 ## Monitoring
 
