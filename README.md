@@ -26,7 +26,7 @@ The UK Benefits and Claims Assistant simplifies the process of querying informat
 
 Navigating the complex landscape of the UK benefits and claims system can be overwhelming, especially for individuals who need immediate and accurate information regarding their eligibility or rights. Whether it's updating benefit information, understanding NHS negligence claims, or filing for medical compensation, the system often leaves people with unanswered questions. Delays in receiving this information can lead to missed deadlines, incomplete filings, and unclaimed benefits.
 
-The UK Benefits and Claims Assistant project addresses this issue by providing a user-friendly RAG (Retrieval-Augmented Generation) application. This assistant allows users to ask questions related to UK benefits, claims, and NHS negligence claims. By leveraging a pre-processed dataset and advanced AI models, it offers accurate, real-time answers on various topics like managing existing benefits, medical negligence claims, and statutory sick pay.
+The UK Benefits and Claims Assistant project addresses this issue by providing a user-friendly RAG (Retrieval-Augmented Generation) application. This assistant allows users to ask questions related to UK benefits, claims, and NHS negligence claims. By leveraging a pre-processed dataset and advanced AI models, it offers accurate, real-time answers on various topics like managing existing benefits, Looking for work, Disabled or health condition and Families.
 
 ![Overview of Benefits and Claims Assistant](end2end-benefits/benefits-claims/notebooks/data/benefits.png)
 
