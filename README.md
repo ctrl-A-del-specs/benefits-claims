@@ -131,6 +131,7 @@ docker run -it \
 We generated 2055 questions to evaluate the relevance of answers by some models. The 3 Models were used for evaluating the system were ChatGpt-4o, ChatGpt-4o-mini and Google FlanT5. 
 Using Cosine Similarity as an evaluating metric the average score (Mean) of ChatGpt-4o was `79%`, ChatGpt-4o-mini was `80%` and Google FlanT5 was `50%`. The code used for generating data and implementing the evaluation can be viewed at [offline-rag-evaluation](benefits-claims/notebooks/offline-rag-evaluation.ipynb)
 After establishing the fact that ChatGpt-4o-mini gave the best average, we also used LLM-as-a-judge to evaluate the answers that were of relevance to the questions generated my the model.
+Code implementation details for generating data can be found in the files: [data generation Google FlanT5](./end2end-benefits/benefits-claims/notebooks/huggingface_flan_t5.ipynb) and [data generation OpenAI models](./end2end-benefits/benefits-claims/notebooks/offline-rag-evaluation.ipynb). 
 
 Cosine Similarity - Mean
 `ChatGpt-4o-mini - 80%`
@@ -150,6 +151,8 @@ ChatGpt-4o
 `RELEVANT           1823`
 `PARTLY_RELEVANT     214`
 `NON_RELEVANT         18`
+
+Code implementation details for Generating a ground_truth data for evaluation is at [Ground Truth Data Generation](./end2end-benefits/benefits-claims/notebooks/ground_truth.ipynb)
 
 ## Retrieval
 
